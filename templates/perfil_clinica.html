@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Perfil da Clínica</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f7f9fb;
+      margin: 0;
+      padding: 0;
+      color: #1f2933;
+    }
+    header {
+      background-color: #0f6cbf;
+      color: #fff;
+      padding: 1.5rem 2rem;
+      text-align: center;
+    }
+    main {
+      max-width: 720px;
+      margin: 2rem auto;
+      padding: 2rem;
+      background: #fff;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+      border-radius: 10px;
+    }
+    h1 {
+      margin: 0;
+      font-size: 1.8rem;
+    }
+    form {
+      display: grid;
+      gap: 1rem;
+    }
+    label {
+      font-weight: 600;
+      display: block;
+      margin-bottom: 0.35rem;
+    }
+    input[type="text"], textarea, input[type="file"] {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #cfd6df;
+      border-radius: 8px;
+      font-size: 1rem;
+      box-sizing: border-box;
+    }
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+    button {
+      background-color: #0f6cbf;
+      color: #fff;
+      border: none;
+      padding: 0.9rem 1.5rem;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+    button:hover {
+      background-color: #0c5da3;
+    }
+    .messages {
+      margin-bottom: 1rem;
+    }
+    .message {
+      padding: 0.9rem 1rem;
+      border-radius: 8px;
+      margin-bottom: 0.5rem;
+    }
+    .message.sucesso {
+      background: #e6f6ec;
+      color: #116149;
+      border: 1px solid #a6e3bf;
+    }
+    .message.erro {
+      background: #fdebeb;
+      color: #a52626;
+      border: 1px solid #efb4b4;
+    }
+    .logo-preview {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 0.5rem;
+    }
+    .logo-preview img {
+      max-height: 80px;
+      border: 1px solid #cfd6df;
+      padding: 0.35rem;
+      border-radius: 6px;
+      background: #fff;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Perfil da Clínica</h1>
+    <p>Cadastre as informações que serão usadas nos laudos.</p>
+  </header>
+  <main>
+    <div class="messages">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="message {{ category }}">{{ message }}</div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+    </div>
+
+    <form action="{{ url_for('clinic_profile') }}" method="post" enctype="multipart/form-data">
+      <div>
+        <label for="razao_social">Razão Social *</label>
+        <input type="text" id="razao_social" name="razao_social" value="{{ profile.razao_social }}" required>
+      </div>
+
+      <div>
+        <label for="cnpj">CNPJ *</label>
+        <input type="text" id="cnpj" name="cnpj" value="{{ profile.cnpj }}" required>
+      </div>
+
+      <div>
+        <label for="endereco">Endereço Completo *</label>
+        <textarea id="endereco" name="endereco" required>{{ profile.endereco }}</textarea>
+      </div>
+
+      <div>
+        <label for="logo">Logomarca da Clínica</label>
+        <input type="file" id="logo" name="logo" accept="image/png, image/jpeg, image/gif">
+        {% if profile.logo_filename %}
+          <div class="logo-preview">
+            <strong>Logomarca atual:</strong>
+            <img src="{{ url_for('static', filename='logos/' + profile.logo_filename) }}" alt="Logomarca da clínica">
+          </div>
+        {% endif %}
+      </div>
+
+      <button type="submit">Salvar perfil</button>
+    </form>
+  </main>
+</body>
+</html>
