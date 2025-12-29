@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Perfil do Médico</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2rem; }
+        h1 { color: #0c4a6e; }
+        form { max-width: 600px; display: grid; gap: 1rem; }
+        label { font-weight: bold; }
+        input[type="text"], input[type="file"] { width: 100%; padding: 0.5rem; box-sizing: border-box; }
+        button { background: #0ea5e9; color: white; border: none; padding: 0.75rem 1.25rem; cursor: pointer; border-radius: 4px; }
+        button:hover { background: #0284c7; }
+        .info { margin-top: 2rem; background: #f8fafc; padding: 1rem; border: 1px solid #e2e8f0; }
+    </style>
+</head>
+<body>
+    <h1>Perfil do Médico</h1>
+    <form action="{{ url_for('perfil_medico_view') }}" method="post" enctype="multipart/form-data">
+        <div>
+            <label for="nome">Nome</label>
+            <input id="nome" name="nome" type="text" value="{{ perfil.nome }}" required>
+        </div>
+        <div>
+            <label for="crm_uf">CRM/UF</label>
+            <input id="crm_uf" name="crm_uf" type="text" placeholder="123456/UF" value="{{ perfil.crm_uf }}" required>
+        </div>
+        <div>
+            <label for="rqe">RQE</label>
+            <input id="rqe" name="rqe" type="text" value="{{ perfil.rqe }}">
+        </div>
+        <div>
+            <label for="foto_perfil">Foto de Perfil</label>
+            <input id="foto_perfil" name="foto_perfil" type="file" accept="image/*">
+        </div>
+        <div>
+            <label for="comprovante_crm">Comprovante do CRM</label>
+            <input id="comprovante_crm" name="comprovante_crm" type="file" accept="application/pdf,image/*">
+        </div>
+        <button type="submit">Salvar Perfil</button>
+    </form>
+
+    <div class="info">
+        <h2>Dados salvos</h2>
+        <p><strong>Nome:</strong> {{ perfil.nome or '—' }}</p>
+        <p><strong>CRM/UF:</strong> {{ perfil.crm_uf or '—' }}</p>
+        <p><strong>RQE:</strong> {{ perfil.rqe or '—' }}</p>
+        <p><strong>Foto de Perfil:</strong> {{ perfil.foto_perfil or 'Nenhum arquivo enviado' }}</p>
+        <p><strong>Comprovante do CRM:</strong> {{ perfil.comprovante_crm or 'Nenhum arquivo enviado' }}</p>
+    </div>
+</body>
+</html>

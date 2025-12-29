@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard do Médico</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2rem; }
+        h1 { color: #0c4a6e; }
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        th, td { border: 1px solid #d1d5db; padding: 0.75rem; text-align: left; }
+        th { background: #f1f5f9; }
+        tr:nth-child(even) { background: #f8fafc; }
+        .status { font-weight: bold; color: #b45309; }
+    </style>
+</head>
+<body>
+    <h1>Exames Pendentes</h1>
+    {% if exames %}
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Paciente</th>
+                    <th>Tipo</th>
+                    <th>Solicitado em</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for exame in exames %}
+                    <tr>
+                        <td>{{ exame.id }}</td>
+                        <td>{{ exame.paciente }}</td>
+                        <td>{{ exame.tipo }}</td>
+                        <td>{{ exame.solicitado_em.strftime('%d/%m/%Y %H:%M') }}</td>
+                        <td class="status">{{ exame.status }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Não há exames pendentes no momento.</p>
+    {% endif %}
+</body>
+</html>
