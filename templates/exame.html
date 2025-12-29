@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Exame - {{ exam.patient_name }}</title>
+    <style>
+        body {
+            font-family: "Helvetica", Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f5f7fb;
+            color: #1f2933;
+        }
+
+        .container {
+            max-width: 720px;
+            margin: 40px auto;
+            background: #fff;
+            border: 1px solid #d7dbe2;
+            border-radius: 10px;
+            padding: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+
+        h1 {
+            margin-top: 0;
+            color: #0e556f;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            padding: 12px 14px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            background: #f8fafc;
+        }
+
+        .label { color: #4b5563; font-size: 13px; margin-bottom: 4px; }
+        .value { font-weight: 600; }
+
+        .button-row {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #1a7ca8, #0e556f);
+            color: #fff;
+            padding: 12px 16px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 700;
+            box-shadow: 0 10px 25px rgba(26,124,168,0.25);
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 12px 28px rgba(26,124,168,0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Exame de ECG</h1>
+        <p>Visualize os principais dados do exame antes de gerar o laudo técnico em PDF.</p>
+
+        <div class="grid">
+            <div class="card">
+                <div class="label">Paciente</div>
+                <div class="value">{{ exam.patient_name }}</div>
+            </div>
+            <div class="card">
+                <div class="label">Médico Responsável</div>
+                <div class="value">{{ exam.doctor.name }}</div>
+            </div>
+            <div class="card">
+                <div class="label">CRM/RQE</div>
+                <div class="value">{{ exam.doctor.crm }} / {{ exam.doctor.rqe }}</div>
+            </div>
+            <div class="card">
+                <div class="label">Data/Hora</div>
+                <div class="value">{{ exam.formatted_date }}</div>
+            </div>
+        </div>
+
+        <div class="grid">
+            <div class="card">
+                <div class="label">RITMO</div>
+                <div class="value">{{ exam.ritmo }}</div>
+            </div>
+            <div class="card">
+                <div class="label">QRS</div>
+                <div class="value">{{ exam.qrs }}</div>
+            </div>
+            <div class="card">
+                <div class="label">ST/T</div>
+                <div class="value">{{ exam.stt }}</div>
+            </div>
+            <div class="card">
+                <div class="label">CONCLUSÃO</div>
+                <div class="value">{{ exam.conclusao }}</div>
+            </div>
+        </div>
+
+        <div class="button-row">
+            <a class="btn" href="{{ url_for('laudo_pdf') }}" target="_blank" rel="noopener">
+                🖨️ Gerar PDF
+            </a>
+        </div>
+    </div>
+</body>
+</html>
