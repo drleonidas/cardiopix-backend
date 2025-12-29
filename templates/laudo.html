@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <title>Laudo de ECG</title>
+  <style>
+    :root {
+      --primary: #1f4e79;
+      --light: #f5f7fa;
+      --border: #d6d9e0;
+    }
+    body {
+      font-family: "Helvetica Neue", Arial, sans-serif;
+      background: var(--light);
+      margin: 0;
+      padding: 0;
+      color: #111;
+    }
+    header {
+      background: #fff;
+      border-bottom: 3px solid var(--primary);
+      display: flex;
+      align-items: center;
+      padding: 16px;
+      gap: 16px;
+    }
+    .logo {
+      width: 120px;
+      height: 60px;
+      object-fit: contain;
+      border: 1px solid var(--border);
+      background: #fff;
+      padding: 8px;
+      border-radius: 8px;
+    }
+    .doctor-info {
+      flex: 1;
+    }
+    .doctor-info h1 {
+      margin: 0 0 4px 0;
+      color: var(--primary);
+      font-size: 22px;
+    }
+    .doctor-info p {
+      margin: 0;
+      font-size: 14px;
+      color: #333;
+    }
+    main {
+      max-width: 960px;
+      margin: 24px auto;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+    }
+    .section-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--primary);
+      margin: 24px 0 8px 0;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+    .technical-table {
+      width: 100%;
+      border-collapse: collapse;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      background: #fafbfe;
+    }
+    .technical-table th,
+    .technical-table td {
+      padding: 12px;
+      border: 1px solid var(--border);
+      font-size: 14px;
+    }
+    textarea, input[type="text"] {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px;
+      font-size: 14px;
+      box-sizing: border-box;
+      background: #fff;
+    }
+    textarea {
+      min-height: 90px;
+      resize: vertical;
+    }
+    .field-wrapper {
+      position: relative;
+      margin-bottom: 12px;
+    }
+    .voice-btn {
+      position: absolute;
+      right: 10px;
+      bottom: 10px;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
+    .actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 16px;
+    }
+    button.primary {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 18px;
+      font-size: 15px;
+      cursor: pointer;
+    }
+    button.secondary {
+      background: #fff;
+      color: var(--primary);
+      border: 1px solid var(--primary);
+      border-radius: 10px;
+      padding: 12px 18px;
+      font-size: 15px;
+      cursor: pointer;
+    }
+    .signature {
+      margin-top: 16px;
+    }
+    footer {
+      text-align: center;
+      font-size: 12px;
+      color: #444;
+      margin-top: 32px;
+      padding-top: 8px;
+      border-top: 1px dashed var(--border);
+    }
+    .login-card {
+      max-width: 480px;
+      margin: 60px auto;
+      background: #fff;
+      padding: 24px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+    }
+    .login-card h2 {
+      margin-top: 0;
+      color: var(--primary);
+    }
+  </style>
+</head>
+<body>
+  {% if mode == 'login' %}
+    <div class="login-card">
+      <h2>Acesso do Médico</h2>
+      <form method="post" action="{{ url_for('login') }}">
+        <div class="field-wrapper">
+          <label for="medico_nome">Nome do Médico</label>
+          <input id="medico_nome" name="medico_nome" type="text" placeholder="Dra. Maria Cardio" required>
+        </div>
+        <div class="field-wrapper">
+          <label for="crm">CRM</label>
+          <input id="crm" name="crm" type="text" placeholder="CRM 00000" required>
+        </div>
+        <div class="field-wrapper">
+          <label for="rqe">RQE</label>
+          <input id="rqe" name="rqe" type="text" placeholder="RQE 00000" required>
+        </div>
+        <div class="field-wrapper">
+          <label for="unidade_nome">Unidade</label>
+          <input id="unidade_nome" name="unidade_nome" type="text" placeholder="Hospital CardioPix" required>
+        </div>
+        <div class="field-wrapper">
+          <label for="unidade_logo">URL da logomarca da Unidade</label>
+          <input id="unidade_logo" name="unidade_logo" type="text" placeholder="https://.../logo.png" required>
+        </div>
+        <div class="actions">
+          <button type="submit" class="primary">Entrar</button>
+        </div>
+      </form>
+    </div>
+  {% else %}
+    <header>
+      {% if session.get('unidade_logo') %}
+        <img src="{{ session.get('unidade_logo') }}" alt="Logo da Unidade" class="logo">
+      {% else %}
+        <div class="logo" aria-label="Logo da Unidade"></div>
+      {% endif %}
+      <div class="doctor-info">
+        <h1>{{ session.get('unidade_nome') or 'Unidade' }}</h1>
+        <p>Médico: {{ session.get('medico_nome') }} | CRM: {{ session.get('crm') }} | RQE: {{ session.get('rqe') }}</p>
+      </div>
+    </header>
+
+    <main>
+      {% if mode == 'form' %}
+      <form method="post" action="{{ url_for('generate_pdf') }}">
+      {% endif %}
+        <section>
+          <div class="section-title">Dados Técnicos</div>
+          <table class="technical-table">
+            <tbody>
+              {% for row in technical_defaults %}
+                <tr>
+                  <th>{{ row.label }}</th>
+                  <td>
+                    {% if mode == 'pdf' %}
+                      {{ technical_values.get(row.name, '') }}
+                    {% else %}
+                      <input type="text" name="{{ row.name }}" value="{{ technical_values.get(row.name, '') }}" placeholder="{{ row.placeholder }}">
+                    {% endif %}
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <div class="section-title">Ritmo</div>
+          <div class="field-wrapper">
+            {% if mode == 'pdf' %}
+              <p>{{ ritmo }}</p>
+            {% else %}
+              <textarea id="ritmo" name="ritmo" placeholder="Descreva o ritmo...">{{ ritmo }}</textarea>
+              <button class="voice-btn" type="button" data-target="ritmo" title="Ditado de voz">🎤</button>
+            {% endif %}
+          </div>
+        </section>
+
+        <section>
+          <div class="section-title">QRS</div>
+          <div class="field-wrapper">
+            {% if mode == 'pdf' %}
+              <p>{{ qrs }}</p>
+            {% else %}
+              <textarea id="qrs" name="qrs" placeholder="Interpretação do QRS...">{{ qrs }}</textarea>
+              <button class="voice-btn" type="button" data-target="qrs" title="Ditado de voz">🎤</button>
+            {% endif %}
+          </div>
+        </section>
+
+        <section>
+          <div class="section-title">ST/T</div>
+          <div class="field-wrapper">
+            {% if mode == 'pdf' %}
+              <p>{{ st_t }}</p>
+            {% else %}
+              <textarea id="st_t" name="st_t" placeholder="Alterações de ST/T...">{{ st_t }}</textarea>
+              <button class="voice-btn" type="button" data-target="st_t" title="Ditado de voz">🎤</button>
+            {% endif %}
+          </div>
+        </section>
+
+        <section>
+          <div class="section-title">Conclusão</div>
+          <div class="field-wrapper">
+            {% if mode == 'pdf' %}
+              <p>{{ conclusao }}</p>
+            {% else %}
+              <textarea id="conclusao" name="conclusao" placeholder="Conclusão diagnóstica...">{{ conclusao }}</textarea>
+              <button class="voice-btn" type="button" data-target="conclusao" title="Ditado de voz">🎤</button>
+            {% endif %}
+          </div>
+        </section>
+
+        <section class="signature">
+          <div class="section-title">Assinatura Digital ICP-Brasil</div>
+          {% if mode == 'pdf' %}
+            <p>{{ assinatura }}</p>
+          {% else %}
+            <input type="text" name="assinatura" placeholder="Cole ou digite o hash da assinatura ICP-Brasil"> 
+          {% endif %}
+        </section>
+
+        {% if mode == 'form' %}
+        <div class="actions">
+          <button type="reset" class="secondary">Limpar</button>
+          <button type="submit" class="primary">Gerar PDF</button>
+        </div>
+        {% endif %}
+
+        <footer>
+          Diretriz SBC 2022 - Laudos de Eletrocardiograma
+        </footer>
+
+      {% if mode == 'form' %}
+      </form>
+      {% endif %}
+    </main>
+  {% endif %}
+
+  {% if mode == 'form' %}
+  <script>
+    (function() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        document.querySelectorAll('.voice-btn').forEach(btn => btn.style.display = 'none');
+        return;
+      }
+
+      const recognition = new SpeechRecognition();
+      recognition.lang = 'pt-BR';
+      recognition.continuous = false;
+      recognition.interimResults = false;
+
+      let targetField = null;
+
+      recognition.addEventListener('result', (event) => {
+        const transcript = Array.from(event.results)
+          .map(result => result[0])
+          .map(result => result.transcript)
+          .join(' ');
+        if (targetField) {
+          targetField.value = (targetField.value + ' ' + transcript).trim();
+        }
+      });
+
+      recognition.addEventListener('end', () => {
+        if (targetField) {
+          targetField.focus();
+        }
+      });
+
+      document.querySelectorAll('.voice-btn').forEach(button => {
+        button.addEventListener('click', () => {
+          const field = document.getElementById(button.dataset.target);
+          if (!field) return;
+          targetField = field;
+          recognition.start();
+        });
+      });
+    })();
+  </script>
+  {% endif %}
+</body>
+</html>
