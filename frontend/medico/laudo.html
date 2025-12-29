@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Laudo do Exame - CardioPix</title>
+    <link rel="stylesheet" href="../styles.css" />
+  </head>
+  <body>
+    <header>
+      <div>
+        <h1>Laudo técnico</h1>
+        <p id="subtitle" style="margin: 0; opacity: 0.85"></p>
+      </div>
+      <a class="btn secondary" href="fila.html">Voltar</a>
+    </header>
+
+    <div class="container">
+      <div class="card">
+        <form id="laudo-form">
+          <div class="form-grid">
+            <div>
+              <label for="frequencia">Frequência (bpm)</label>
+              <input id="frequencia" name="frequencia" type="number" min="0" placeholder="Ex.: 72" required />
+            </div>
+            <div>
+              <label for="intervaloPr">Intervalo PR (ms)</label>
+              <input id="intervaloPr" name="intervaloPr" type="number" min="0" placeholder="Ex.: 160" />
+            </div>
+            <div>
+              <label for="intervaloQrs">Intervalo QRS (ms)</label>
+              <input id="intervaloQrs" name="intervaloQrs" type="number" min="0" placeholder="Ex.: 90" />
+            </div>
+            <div>
+              <label for="intervaloQt">Intervalo QT (ms)</label>
+              <input id="intervaloQt" name="intervaloQt" type="number" min="0" placeholder="Ex.: 420" />
+            </div>
+            <div>
+              <label for="ritmo">Ritmo</label>
+              <select id="ritmo" name="ritmo">
+                <option value="">Selecione...</option>
+                <option value="Sinusal">Sinusal</option>
+                <option value="Irregular">Irregular</option>
+                <option value="Fibrilação atrial">Fibrilação atrial</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label for="observacoes">Observações</label>
+            <textarea
+              id="observacoes"
+              name="observacoes"
+              placeholder="Achados adicionais, artefatos, etc"
+            ></textarea>
+          </div>
+
+          <div>
+            <label for="conclusao">Conclusão</label>
+            <textarea
+              id="conclusao"
+              name="conclusao"
+              placeholder="Resumo do laudo"
+              required
+            ></textarea>
+          </div>
+
+          <button type="submit" class="btn primary">Finalizar e Gerar PDF</button>
+        </form>
+        <div id="status" class="status-bar" hidden></div>
+      </div>
+    </div>
+
+    <script>
+      const form = document.getElementById("laudo-form");
+      const statusBar = document.getElementById("status");
+      const subtitle = document.getElementById("subtitle");
+
+      const queryParams = new URLSearchParams(window.location.search);
+      const exameId = queryParams.get("id") || "";
+      subtitle.textContent = exameId ? `Exame #${exameId}` : "Exame não informado";
+
+      const renderStatus = (message, type = "") => {
+        if (!message) {
+          statusBar.hidden = true;
+          return;
+        }
+        statusBar.textContent = message;
+        statusBar.className = `status-bar ${type}`.trim();
+        statusBar.hidden = false;
+      };
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        renderStatus("Enviando laudo e gerando PDF...", "");
+
+        const payload = {
+          frequencia: Number(form.frequencia.value) || null,
+          intervaloPr: Number(form.intervaloPr.value) || null,
+          intervaloQrs: Number(form.intervaloQrs.value) || null,
+          intervaloQt: Number(form.intervaloQt.value) || null,
+          ritmo: form.ritmo.value || null,
+          observacoes: form.observacoes.value.trim() || null,
+          conclusao: form.conclusao.value.trim(),
+        };
+
+        try {
+          const response = await fetch(`/exames/${encodeURIComponent(exameId)}/laudo`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+          });
+
+          if (!response.ok) throw new Error("Falha ao enviar laudo");
+
+          renderStatus("Laudo enviado e PDF solicitado com sucesso.", "success");
+          form.reset();
+        } catch (error) {
+          console.error("Erro ao finalizar laudo", error);
+          renderStatus(
+            "Não foi possível finalizar o laudo. Verifique a API e tente novamente.",
+            "error"
+          );
+        }
+      });
+    </script>
+  </body>
+</html>

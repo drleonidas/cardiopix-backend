@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fila de Laudos - CardioPix</title>
+    <link rel="stylesheet" href="../styles.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Fila de laudos</h1>
+      <span class="badge">Aguardando</span>
+    </header>
+
+    <div class="container">
+      <div class="card">
+        <p>Lista de exames que aguardam laudo técnico.</p>
+        <div id="status" class="status-bar" hidden></div>
+        <div id="list" class="list" aria-live="polite"></div>
+      </div>
+    </div>
+
+    <script>
+      const statusBar = document.getElementById("status");
+      const list = document.getElementById("list");
+
+      const renderStatus = (message, type = "") => {
+        if (!message) {
+          statusBar.hidden = true;
+          return;
+        }
+        statusBar.textContent = message;
+        statusBar.className = `status-bar ${type}`.trim();
+        statusBar.hidden = false;
+      };
+
+      const createItem = (exame) => {
+        const item = document.createElement("div");
+        item.className = "list-item";
+
+        const info = document.createElement("div");
+        info.innerHTML = `
+          <h3>${exame.paciente}</h3>
+          <p>Exame #${exame.id}</p>
+          <p>${exame.data || "Data não informada"}</p>
+        `;
+
+        const btn = document.createElement("a");
+        btn.className = "btn primary";
+        btn.textContent = "Laudar";
+        btn.href = `laudo.html?id=${encodeURIComponent(exame.id)}`;
+
+        item.appendChild(info);
+        item.appendChild(btn);
+        return item;
+      };
+
+      const loadExames = async () => {
+        renderStatus("Carregando exames...", "");
+        try {
+          const response = await fetch("/exames?status=aguardando");
+          if (!response.ok) throw new Error("Falha ao buscar exames");
+          const data = await response.json();
+          renderExames(data?.exames || data || []);
+          renderStatus("");
+        } catch (error) {
+          console.warn("Falha ao consumir API, usando mock.", error);
+          const mock = [
+            { id: 101, paciente: "Maria Oliveira", data: "Hoje" },
+            { id: 102, paciente: "João Souza", data: "Há 10 min" },
+            { id: 103, paciente: "Carla Dias", data: "Há 25 min" },
+          ];
+          renderExames(mock);
+          renderStatus(
+            "Não foi possível carregar da API real. Exibindo dados de exemplo.",
+            "error"
+          );
+        }
+      };
+
+      const renderExames = (exames) => {
+        list.innerHTML = "";
+        if (!exames.length) {
+          list.innerHTML = "<p>Nenhum exame aguardando laudo.</p>";
+          return;
+        }
+        exames.forEach((exame) => list.appendChild(createItem(exame)));
+      };
+
+      loadExames();
+    </script>
+  </body>
+</html>
