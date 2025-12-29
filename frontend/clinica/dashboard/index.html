@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard da Clínica</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="page-header">
+      <div>
+        <p class="eyebrow">Clínica</p>
+        <h1>Dashboard de Exames</h1>
+      </div>
+      <button class="primary" id="novo-exame">Novo Exame</button>
+    </header>
+
+    <main>
+      <section class="card">
+        <div class="card__header">
+          <div>
+            <p class="eyebrow">Exames</p>
+            <h2>Lista de exames enviados</h2>
+          </div>
+          <button class="secondary" id="recarregar">Recarregar</button>
+        </div>
+        <div class="table" id="exames-lista"></div>
+      </section>
+    </main>
+
+    <div class="modal" id="modal-exame" aria-hidden="true">
+      <div class="modal__dialog" role="dialog" aria-modal="true">
+        <header class="modal__header">
+          <h3>Novo Exame</h3>
+          <button class="icon" id="fechar-modal" aria-label="Fechar">×</button>
+        </header>
+        <form id="form-exame" class="form">
+          <label class="form__field">
+            <span>Nome do Paciente</span>
+            <input type="text" name="patientName" placeholder="Digite o nome" required />
+          </label>
+
+          <div class="form__field">
+            <span>Anexo do ECG</span>
+            <div class="upload">
+              <input type="file" id="ecg-file" accept=".pdf,.png,.jpg,.jpeg,.csv" />
+              <div class="upload__info">
+                <p class="upload__name" id="upload-name">Nenhum arquivo selecionado</p>
+                <div class="upload__actions">
+                  <label class="secondary" for="ecg-file">Escolher arquivo</label>
+                  <button type="button" class="ghost" id="simular-anexo">Simular anexo</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form__footer">
+            <button type="button" class="ghost" id="cancelar">Cancelar</button>
+            <button type="submit" class="primary">Salvar exame</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
