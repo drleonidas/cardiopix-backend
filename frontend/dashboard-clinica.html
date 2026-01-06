@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard da Clínica | CardioPix</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="container">
+    <section class="card">
+      <h1>Dashboard da Clínica</h1>
+      <p>Área destinada a administradores e clínicas. Conteúdos podem ser adicionados aqui.</p>
+      <p class="helper">Perfil ativo: <span id="profile-label">desconhecido</span></p>
+      <a href="/frontend/login.html">Voltar para login</a>
+    </section>
+  </main>
+  <script>
+    const data = localStorage.getItem('cardiopix:user');
+    if (data) {
+      const parsed = JSON.parse(data);
+      const label = document.getElementById('profile-label');
+      label.textContent = parsed.profile;
+    }
+  </script>
+</body>
+</html>
