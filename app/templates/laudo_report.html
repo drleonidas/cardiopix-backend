@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <style>
+      body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+      header, footer { padding: 16px; background: #f7f7f7; }
+      header { display: flex; align-items: center; gap: 12px; }
+      .clinic-logo { max-height: 64px; }
+      .clinic-logo.missing { color: #999; font-size: 12px; border: 1px dashed #ccc; padding: 8px; }
+      .clinic-info { display: flex; flex-direction: column; }
+      main { padding: 20px; }
+      footer { font-size: 12px; text-align: center; color: #555; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="logo">{clinic_logo}</div>
+      <div class="clinic-info">
+        <strong>{clinic_name}</strong>
+        <span>{clinic_address}</span>
+      </div>
+    </header>
+
+    <main>
+      {report_body}
+    </main>
+
+    <footer>
+      <div>{footer_address}</div>
+    </footer>
+  </body>
+</html>
