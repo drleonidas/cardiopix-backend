@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard Médico - CardioPix</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f7f9fb; }
+    header { background: #16325c; color: #fff; padding: 16px 24px; }
+    main { padding: 24px; max-width: 1200px; margin: 0 auto; }
+    h1 { margin: 0 0 8px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+    .card { background: #fff; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); padding: 16px; }
+    label { display: block; margin-top: 8px; font-weight: 600; }
+    input, textarea, select { width: 100%; padding: 8px; margin-top: 4px; border-radius: 6px; border: 1px solid #cbd5e0; box-sizing: border-box; }
+    textarea { min-height: 80px; resize: vertical; }
+    button { background: #1f6feb; color: #fff; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-weight: 700; margin-top: 12px; }
+    button:hover { background: #1857b6; }
+    .muted { color: #4a5568; font-size: 14px; }
+    .alertas { margin-top: 8px; color: #b45309; font-weight: 700; }
+    .sugestoes-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Dashboard Médico</h1>
+    <p class="muted">Gerador editável de sugestão de laudo (SBC 2022)</p>
+  </header>
+  <main>
+    <div class="grid">
+      <section class="card">
+        <h2>Dados do Paciente</h2>
+        <label for="idade">Idade (anos)</label>
+        <input id="idade" type="number" min="0" placeholder="Ex.: 54" />
+
+        <label for="sexo">Sexo</label>
+        <select id="sexo">
+          <option value="">Selecione</option>
+          <option value="masculino">Masculino</option>
+          <option value="feminino">Feminino</option>
+        </select>
+
+        <label for="peso">Peso (kg)</label>
+        <input id="peso" type="number" step="0.1" min="0" placeholder="Ex.: 82" />
+
+        <label for="altura">Altura (m)</label>
+        <input id="altura" type="number" step="0.01" min="0" placeholder="Ex.: 1.72" />
+
+        <p class="muted" id="imc">IMC: --</p>
+      </section>
+
+      <section class="card">
+        <h2>Parâmetros do Exame</h2>
+        <label for="fc">FC (bpm)</label>
+        <input id="fc" type="number" step="1" min="0" placeholder="Ex.: 76" />
+
+        <label for="onda_p">Onda P (ms)</label>
+        <input id="onda_p" type="number" step="1" min="0" placeholder="Ex.: 90" />
+
+        <label for="pr">PR (ms)</label>
+        <input id="pr" type="number" step="1" min="0" placeholder="Ex.: 160" />
+
+        <label for="qrs">QRS (ms)</label>
+        <input id="qrs" type="number" step="1" min="0" placeholder="Ex.: 92" />
+
+        <label for="qt">QT (ms)</label>
+        <input id="qt" type="number" step="1" min="0" placeholder="Ex.: 380" />
+
+        <label for="qtc">QTc (ms)</label>
+        <input id="qtc" type="number" step="1" min="0" placeholder="Ex.: 430" />
+      </section>
+
+      <section class="card">
+        <h2>Outros achados</h2>
+        <label for="eixo_p">Eixo P (°)</label>
+        <input id="eixo_p" type="number" step="1" placeholder="Ex.: 60" />
+
+        <label for="eixo_qrs">Eixo QRS (°)</label>
+        <input id="eixo_qrs" type="number" step="1" placeholder="Ex.: 70" />
+
+        <label for="eixo_t">Eixo T (°)</label>
+        <input id="eixo_t" type="number" step="1" placeholder="Ex.: 50" />
+
+        <label for="rv5">RV5 (mm)</label>
+        <input id="rv5" type="number" step="0.1" min="0" placeholder="Ex.: 22" />
+
+        <label for="sv1">SV1 (mm)</label>
+        <input id="sv1" type="number" step="0.1" min="0" placeholder="Ex.: 18" />
+
+        <label for="st_t">ST/T</label>
+        <input id="st_t" type="text" placeholder="Ex.: Sem alterações" />
+
+        <div class="alertas" id="alertas"></div>
+        <button id="gerar">Gerar Sugestão</button>
+      </section>
+    </div>
+
+    <section class="card" style="margin-top: 16px;">
+      <h2>Sugestão Editável</h2>
+      <div class="sugestoes-grid">
+        <div>
+          <label for="ritmo">RITMO</label>
+          <textarea id="ritmo" placeholder="Resultado do ritmo"></textarea>
+        </div>
+        <div>
+          <label for="onda_p_sugestao">ONDA P</label>
+          <textarea id="onda_p_sugestao" placeholder="Descrição de onda P"></textarea>
+        </div>
+        <div>
+          <label for="qrs_sugestao">QRS</label>
+          <textarea id="qrs_sugestao" placeholder="Descrição de QRS"></textarea>
+        </div>
+        <div>
+          <label for="stt_sugestao">ST/T</label>
+          <textarea id="stt_sugestao" placeholder="Descrição de ST/T"></textarea>
+        </div>
+        <div>
+          <label for="qtqtc_sugestao">QT/QTc</label>
+          <textarea id="qtqtc_sugestao" placeholder="Descrição de QT/QTc"></textarea>
+        </div>
+        <div>
+          <label for="conclusao">CONCLUSÃO</label>
+          <textarea id="conclusao" placeholder="Resumo final"></textarea>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const normasSBC = {
+      FC: { minimo: 60, maximo: 100, unidade: 'bpm' },
+      PR: { minimo: 120, maximo: 200, unidade: 'ms' },
+      QRS: { minimo: 80, maximo: 120, unidade: 'ms' },
+      QTc: { limitesSexo: { masculino: 450, feminino: 460 }, unidade: 'ms' }
+    };
+
+    function parseNumber(id) {
+      const value = document.getElementById(id).value;
+      const parsed = parseFloat(value);
+      return Number.isFinite(parsed) ? parsed : null;
+    }
+
+    function avaliar(parametro, valor, sexo) {
+      const norma = normasSBC[parametro];
+      if (valor === null || valor === undefined) return { status: 'indisponivel' };
+      if (parametro === 'QTc') {
+        const limite = (sexo && norma.limitesSexo[sexo]) || Math.max(...Object.values(norma.limitesSexo));
+        if (valor > limite) return { status: 'alterado' };
+        if (valor >= limite - 10) return { status: 'limite' };
+        return { status: 'normal' };
+      }
+      if (valor < norma.minimo || valor > norma.maximo) return { status: 'alterado' };
+      if (valor - norma.minimo <= 5 || norma.maximo - valor <= 5) return { status: 'limite' };
+      return { status: 'normal' };
+    }
+
+    function calcularIMC(peso, altura) {
+      if (!peso || !altura) return null;
+      const imc = peso / (altura * altura);
+      return Number.isFinite(imc) ? Math.round(imc * 10) / 10 : null;
+    }
+
+    function gerarSugestao() {
+      const sexo = document.getElementById('sexo').value;
+      const idade = parseNumber('idade');
+      const peso = parseNumber('peso');
+      const altura = parseNumber('altura');
+      const imc = calcularIMC(peso, altura);
+      document.getElementById('imc').innerText = imc ? `IMC: ${imc} kg/m²` : 'IMC: --';
+
+      const fc = parseNumber('fc');
+      const pr = parseNumber('pr');
+      const qrs = parseNumber('qrs');
+      const qt = parseNumber('qt');
+      const qtc = parseNumber('qtc');
+      const ondaP = parseNumber('onda_p');
+      const eixoP = parseNumber('eixo_p');
+      const eixoQRS = parseNumber('eixo_qrs');
+      const eixoT = parseNumber('eixo_t');
+      const rv5 = parseNumber('rv5');
+      const sv1 = parseNumber('sv1');
+      const stt = document.getElementById('st_t').value || 'Sem alterações significativas de ST/T';
+
+      const fcInfo = avaliar('FC', fc, sexo);
+      const prInfo = avaliar('PR', pr, sexo);
+      const qrsInfo = avaliar('QRS', qrs, sexo);
+      const qtcInfo = avaliar('QTc', qtc, sexo);
+
+      const alertas = [];
+      if ([fcInfo, prInfo, qrsInfo, qtcInfo].some(info => info.status === 'limite')) {
+        alertas.push('Atenção: Parâmetros limítrofes conforme SBC 2022');
+      }
+      if ([fcInfo, prInfo, qrsInfo, qtcInfo].some(info => info.status === 'indisponivel')) {
+        alertas.push('Parâmetros incompletos para avaliação integral do traçado');
+      }
+      document.getElementById('alertas').innerText = alertas.join(' | ');
+
+      const ritmo = !fc ? 'Ritmo não determinado (FC ausente)' :
+        fc < 60 ? `Bradicardia sinusal (${fc} bpm)` :
+        fc > 100 ? `Taquicardia sinusal (${fc} bpm)` :
+        (fcInfo.status === 'limite' ? `Ritmo sinusal em faixa limítrofe (${fc} bpm)` : `Ritmo sinusal (${fc} bpm)`);
+
+      const sugestaoP = [
+        ondaP ? `Duração da onda P: ${ondaP} ms` : null,
+        Number.isFinite(eixoP) ? `Eixo de P: ${eixoP}º` : null,
+        prInfo.status === 'alterado' ? 'PR fora da faixa de normalidade' : null,
+        prInfo.status === 'limite' ? 'PR em faixa limítrofe' : null
+      ].filter(Boolean).join('; ') || 'Ondas P sem observações adicionais';
+
+      const somaSokolow = (rv5 !== null && sv1 !== null) ? rv5 + sv1 : null;
+      const sugestaoQRS = [
+        qrs ? `Duração do QRS: ${qrs} ms` : null,
+        Number.isFinite(eixoQRS) ? `Eixo de QRS: ${eixoQRS}º` : null,
+        qrsInfo.status === 'alterado' ? 'QRS alargado - avaliar bloqueios de ramo' : null,
+        qrsInfo.status === 'limite' ? 'QRS em faixa limítrofe' : null,
+        Number.isFinite(somaSokolow) ? `RV5 + SV1 = ${somaSokolow} mm` : null,
+        (Number.isFinite(somaSokolow) && somaSokolow > 35) ? 'Índice de Sokolow-Lyon elevado' : null
+      ].filter(Boolean).join('; ') || 'QRS sem observações adicionais';
+
+      const sugestaoQT = [
+        qt ? `QT: ${qt} ms` : null,
+        qtc ? `QTc: ${qtc} ms` : null,
+        qtcInfo.status === 'alterado' ? 'QTc prolongado' : null,
+        qtcInfo.status === 'limite' ? 'QTc em faixa limítrofe' : null
+      ].filter(Boolean).join('; ') || 'Sem alterações relevantes de QT/QTc';
+
+      const sugestaoST = stt;
+
+      const conclusoes = [];
+      if (imc && imc >= 30) {
+        const complemento = idade ? ` em paciente ${idade} anos` : '';
+        const sexoDescr = sexo ? ` (${sexo})` : '';
+        conclusoes.push(`IMC ${imc} kg/m²${complemento}${sexoDescr} - Possível Sobrecarga Ventricular`);
+      }
+      if (Number.isFinite(somaSokolow) && somaSokolow > 35) {
+        conclusoes.push('Critério de hipertrofia ventricular esquerda (Sokolow-Lyon)');
+      }
+      if (qrsInfo.status === 'alterado') {
+        conclusoes.push('QRS alargado - investigar bloqueio de ramo');
+      }
+      if (qtcInfo.status === 'alterado') {
+        conclusoes.push('QTc prolongado - risco de instabilidade elétrica');
+      }
+      if (stt.toLowerCase().includes('depress') || stt.toLowerCase().includes('eleva')) {
+        conclusoes.push('Alterações de ST/T requerem correlação clínica');
+      }
+      const conclusaoTexto = conclusoes.length ? conclusoes.join('; ') : 'Traçado dentro dos padrões de normalidade';
+
+      document.getElementById('ritmo').value = ritmo;
+      document.getElementById('onda_p_sugestao').value = sugestaoP;
+      document.getElementById('qrs_sugestao').value = sugestaoQRS;
+      document.getElementById('stt_sugestao').value = sugestaoST;
+      document.getElementById('qtqtc_sugestao').value = sugestaoQT;
+      document.getElementById('conclusao').value = conclusaoTexto;
+    }
+
+    document.getElementById('gerar').addEventListener('click', gerarSugestao);
+  </script>
+</body>
+</html>
